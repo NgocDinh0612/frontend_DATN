@@ -96,7 +96,7 @@ const Sidebar = () => {
                   alt="profile-user"
                   width="100px"
                   height="100px"
-                  src={`../../assets/user.png`}
+                  src={`../../assets/user2.png`}
                   style={{ cursor: "pointer", borderRadius: "50%" }}
                 />
               </Box>
@@ -107,10 +107,10 @@ const Sidebar = () => {
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  Nguyen Van Huong
+                  SKYTECH
                 </Typography>
                 <Typography variant="h5" color={colors.greenAccent[500]}>
-                  VP Admin
+                  Admin
                 </Typography>
               </Box>
             </Box>
@@ -140,7 +140,7 @@ const Sidebar = () => {
               setSelected={setSelected}
             />
             <Item
-              title="Contacts Information"
+              title="Register User"
               to="/contacts"
               icon={<ContactsOutlinedIcon />}
               selected={selected}
@@ -154,7 +154,7 @@ const Sidebar = () => {
               Pages
             </Typography>
             <Item
-              title="Profile Form"
+              title="Create User"
               to="/form"
               icon={<PersonOutlinedIcon />}
               selected={selected}
