@@ -765,32 +765,42 @@ const Contacts = () => {
   };
 
   // GỬI LỜI MỜI
-  const handleCreateUser = async () => {
-    if (!validate()) return;
-    setLoading(true);
-    try {
-      await apiCall("/admin/invite-user", {
-        method: "POST",
-        data: {
-          email: newUser.email,
-          role: newUser.role,
-          firstName: newUser.firstName,
-          lastName: newUser.lastName,
-        },
-      });
+const handleCreateUser = async () => {
+  if (!validate()) return;
+  setLoading(true);
+  try {
+    await apiCall("/admin/invite-user", {
+      method: "POST",
+      data: {
+        email: newUser.email,
+        role: newUser.role,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+      },
+    });
 
-      setAlert({ open: true, message: "Đã gửi lời mời thành công!", severity: "success" });
-      setOpen(false);
-      setNewUser({ email: "", role: "user", firstName: "", lastName: "" });
-      setErrors({});
-      fetchUsers();
-    } catch (err) {
-      const msg = err.response?.data?.message || "Lỗi gửi lời mời. Vui lòng thử lại.";
-      setAlert({ open: true, message: msg, severity: "error" });
-    } finally {
-      setLoading(false);
-    }
-  };
+    // HIỂN THỊ EMAIL + VAI TRÒ
+    const roleText = newUser.role === "admin" ? "ADMIN" : newUser.role.toUpperCase();
+    setAlert({ 
+      open: true, 
+      message: `Đã gửi lời mời đến ${newUser.email} với vai trò ${roleText}!`, 
+      severity: "success" 
+    });
+
+    // TỰ ĐÓNG TẮT SAU 3 GIÂY
+    setTimeout(() => setAlert(prev => ({ ...prev, open: false })), 3000);
+
+    setOpen(false);
+    setNewUser({ email: "", role: "user", firstName: "", lastName: "" });
+    setErrors({});
+    fetchUsers();
+  } catch (err) {
+    const msg = err.response?.data?.message || "Lỗi gửi lời mời. Vui lòng thử lại.";
+    setAlert({ open: true, message: msg, severity: "error" });
+  } finally {
+    setLoading(false);
+  }
+};
 
   const columns = [
     { field: "registrarId", headerName: "STT", width: 70, align: "center" },
