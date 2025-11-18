@@ -481,15 +481,15 @@
 
 
 // src/pages/Login.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react"; // ← THÊM useEffect
 import { useNavigate } from "react-router-dom";
-import { Box, Button, TextField, Typography, IconButton } from "@mui/material";
+import { Box, Button, TextField, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import GoogleIcon from "@mui/icons-material/Google";
 
 const API_BASE = "https://be-js12.onrender.com/api";
 
-// Styled Components - Doanh nghiệp
+// Styled Components - Giữ nguyên 100%
 const LoginContainer = styled(Box)(({ theme }) => ({
   minHeight: "100vh",
   display: "flex",
@@ -566,24 +566,15 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
     borderRadius: "12px",
     backgroundColor: "#f9fbfd",
     transition: "all 0.3s ease",
-    "& fieldset": {
-      borderColor: "#e2e8f0",
-    },
-    "&:hover fieldset": {
-      borderColor: "#1976d2",
-    },
+    "& fieldset": { borderColor: "#e2e8f0" },
+    "&:hover fieldset": { borderColor: "#1976d2" },
     "&.Mui-focused fieldset": {
       borderColor: "#1976d2",
       boxShadow: "0 0 0 3px rgba(25, 118, 210, 0.1)",
     },
   },
-  "& .MuiInputLabel-root": {
-    color: "#64748b",
-    fontWeight: 500,
-  },
-  "& .MuiInputLabel-root.Mui-focused": {
-    color: "#1976d2",
-  },
+  "& .MuiInputLabel-root": { color: "#64748b", fontWeight: 500 },
+  "& .MuiInputLabel-root.Mui-focused": { color: "#1976d2" },
 }));
 
 const Login = () => {
@@ -591,6 +582,29 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  // CHỈ SỬA PHẦN NÀY – LUÔN LUÔN NGHE postMessage
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.origin !== "https://be-js12.onrender.com") return;
+
+      if (event.data && event.data.accessToken) {
+        const { accessToken, refreshToken, user } = event.data;
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken || "");
+        if (user) localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("isAuthenticated", "true");
+        navigate("/dashboard");
+      }
+
+      if (event.data?.type === "pending") {
+        navigate("/pending-verification");
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -612,14 +626,18 @@ const Login = () => {
     }
   };
 
+  // CHỈ MỞ POPUP – KHÔNG ĐĂNG KÝ LISTENER Ở ĐÂY NỮA
   const handleGoogleLogin = () => {
-    const googleAuthUrl = `${API_BASE}/auth/google`;
-    const popup = window.open(googleAuthUrl, "_blank", "width=500,height=600");
-    window.addEventListener("message", (event) => {
-      if (event.origin !== window.location.origin) return;
-      const { accessToken, refreshToken } = event.data;
-      if (accessToken) saveTokensAndGo({ accessToken, refreshToken });
-    });
+    const googleAuthUrl = "https://be-js12.onrender.com/api/auth/google";
+    const popup = window.open(
+      googleAuthUrl,
+      "google-login",
+      "width=500,height=600,left=200,top=200"
+    );
+
+    if (!popup) {
+      alert("Vui lòng cho phép popup để đăng nhập bằng Google!");
+    }
   };
 
   const saveTokensAndGo = ({ accessToken, refreshToken }) => {
@@ -646,7 +664,6 @@ const Login = () => {
       </style>
 
       <LoginCard className="login-card">
-        {/* Logo */}
         <Box mb={3}>
           <Logo
             src={process.env.PUBLIC_URL + "/assets/user2.png"}
@@ -654,21 +671,13 @@ const Login = () => {
           />
         </Box>
 
-        {/* Title */}
-        <Typography
-          variant="h4"
-          fontWeight={700}
-          color="#1e293b"
-          mb={0.5}
-          letterSpacing="-0.5px"
-        >
+        <Typography variant="h4" fontWeight={700} color="#1e293b" mb={0.5} letterSpacing="-0.5px">
           SKYTECH
         </Typography>
         <Typography variant="body1" color="#64748b" mb={4} fontWeight={500}>
           Hệ thống quản lý đèn thông minh
         </Typography>
 
-        {/* Form */}
         <Box component="form" onSubmit={handleLogin}>
           <StyledTextField
             fullWidth
@@ -699,7 +708,6 @@ const Login = () => {
           </GradientButton>
         </Box>
 
-        {/* Divider */}
         <Box position="relative" my={3}>
           <Box
             sx={{
@@ -711,23 +719,15 @@ const Login = () => {
               right: 0,
             }}
           />
-          <Typography
-            variant="caption"
-            bgcolor="white"
-            px={2}
-            color="#94a3b8"
-            position="relative"
-          >
+          <Typography variant="caption" bgcolor="white" px={2} color="#94a3b8" position="relative">
             Hoặc
           </Typography>
         </Box>
 
-        {/* Google Login */}
         <GoogleButton fullWidth onClick={handleGoogleLogin} startIcon={<GoogleIcon />}>
           Tiếp tục với Google
         </GoogleButton>
 
-        {/* Footer */}
         <Typography variant="caption" color="#94a3b8" mt={4} display="block">
           © 2025 SKYTECH. All rights reserved.
         </Typography>
