@@ -586,7 +586,7 @@ const Login = () => {
   // CHỈ SỬA PHẦN NÀY – LUÔN LUÔN NGHE postMessage
   useEffect(() => {
     const handleMessage = (event) => {
-      if (event.origin !== "https://frontend-datn-6kz8gwhsd-ngocdinh0612s-projects.vercel.app") return;
+      if (event.origin !== "https://be-js12.onrender.com") return;
 
       if (event.data && event.data.accessToken) {
         const { accessToken, refreshToken, user } = event.data;
@@ -598,7 +598,7 @@ const Login = () => {
       }
 
       if (event.data?.type === "pending") {
-        navigate("/pending-verification");
+        navigate("/");
       }
     };
 
