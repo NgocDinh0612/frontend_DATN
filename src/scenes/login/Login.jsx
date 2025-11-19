@@ -594,11 +594,11 @@ const Login = () => {
         localStorage.setItem("refreshToken", refreshToken || "");
         if (user) localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("isAuthenticated", "true");
-        navigate("/dashboard");
+        navigate("/");
       }
 
       if (event.data?.type === "pending") {
-        navigate("/");
+        navigate("/light-control");
       }
     };
 
