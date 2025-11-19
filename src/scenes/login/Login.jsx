@@ -585,8 +585,15 @@ const Login = () => {
 
   // CHỈ SỬA PHẦN NÀY – LUÔN LUÔN NGHE postMessage
   useEffect(() => {
+    const allowedOrigins = [
+      window.location.origin, // dev/prod frontend hiện tại
+      "https://be-js12.onrender.com",
+      "https://frontend-datn-ten.vercel.app", // nếu bạn dùng domain cố định
+    ];
+
     const handleMessage = (event) => {
-      if (event.origin !== "https://be-js12.onrender.com") return;
+      // bảo mật: chỉ xử lý nếu origin nằm trong allowlist
+      if (!allowedOrigins.includes(event.origin)) return;
 
       if (event.data && event.data.accessToken) {
         const { accessToken, refreshToken, user } = event.data;
@@ -594,18 +601,18 @@ const Login = () => {
         localStorage.setItem("refreshToken", refreshToken || "");
         if (user) localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("isAuthenticated", "true");
-        navigate("/");
+        // điều hướng nhất quán tới dashboard
+        navigate("/dashboard");
       }
 
       if (event.data?.type === "pending") {
-        navigate("/light-control");
+        navigate("/pending-fication");
       }
     };
 
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
   }, [navigate]);
-
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
